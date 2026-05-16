@@ -139,11 +139,11 @@ describe('storeOrderAction', () => {
 
   it('returns friendly error for SELL orders with insufficient shares', async () => {
     process.env.CLOB_URL = 'https://clob.local'
-    const proxy = address('01')
+    const depositWallet = address('01')
     mocks.getCurrentUser.mockResolvedValueOnce({
       id: 'user-1',
       address: address('aa'),
-      deposit_wallet_address: proxy,
+      deposit_wallet_address: depositWallet,
       settings: {},
     })
     mocks.getUserTradingAuthSecrets.mockResolvedValueOnce({
@@ -162,8 +162,8 @@ describe('storeOrderAction', () => {
     const { storeOrderAction } = await import('@/app/[locale]/(platform)/event/[slug]/_actions/store-order')
     const result = await storeOrderAction(basePayload({
       side: 1,
-      maker: proxy,
-      signer: proxy,
+      maker: depositWallet,
+      signer: depositWallet,
       maker_amount: '10',
       type: 'MARKET',
     }))
@@ -175,12 +175,12 @@ describe('storeOrderAction', () => {
 
   it('submits to CLOB, updates tags, and schedules local order creation', async () => {
     process.env.CLOB_URL = 'https://clob.local'
-    const proxy = address('01')
+    const depositWallet = address('01')
 
     mocks.getCurrentUser.mockResolvedValueOnce({
       id: 'user-1',
       address: address('aa'),
-      deposit_wallet_address: proxy,
+      deposit_wallet_address: depositWallet,
       referred_by_user_id: null,
       settings: { trading: { market_order_type: 'FAK' } },
     })
@@ -203,8 +203,8 @@ describe('storeOrderAction', () => {
 
     const { storeOrderAction } = await import('@/app/[locale]/(platform)/event/[slug]/_actions/store-order')
     const result = await storeOrderAction(basePayload({
-      maker: proxy,
-      signer: proxy,
+      maker: depositWallet,
+      signer: depositWallet,
       type: 'MARKET',
     }))
 
@@ -227,12 +227,12 @@ describe('storeOrderAction', () => {
 
   it('returns default message for unmapped CLOB errors', async () => {
     process.env.CLOB_URL = 'https://clob.local'
-    const proxy = address('01')
+    const depositWallet = address('01')
 
     mocks.getCurrentUser.mockResolvedValueOnce({
       id: 'user-1',
       address: address('aa'),
-      deposit_wallet_address: proxy,
+      deposit_wallet_address: depositWallet,
       referred_by_user_id: null,
       settings: { trading: { market_order_type: 'FAK' } },
     })
@@ -250,8 +250,8 @@ describe('storeOrderAction', () => {
 
     const { storeOrderAction } = await import('@/app/[locale]/(platform)/event/[slug]/_actions/store-order')
     const result = await storeOrderAction(basePayload({
-      maker: proxy,
-      signer: proxy,
+      maker: depositWallet,
+      signer: depositWallet,
       type: 'MARKET',
     }))
 

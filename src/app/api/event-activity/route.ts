@@ -11,7 +11,7 @@ import { normalizeAddress } from '@/lib/wallet'
 const DATA_API_URL = process.env.DATA_URL!
 
 interface DataApiActivity {
-  proxyWallet?: string
+  depositWallet?: string
   timestamp?: number
   conditionId?: string
   type?: string
@@ -115,7 +115,7 @@ export async function GET(request: Request) {
 
       for (const profile of profiles || []) {
         const normalizedAddress = normalizeAddress(profile.address)?.toLowerCase()
-        const normalizedProxy = normalizeAddress(profile.deposit_wallet_address)?.toLowerCase()
+        const normalizedDepositWallet = normalizeAddress(profile.deposit_wallet_address)?.toLowerCase()
         const imageUrl = normalizeAvatarUrl(profile.image)
 
         const createdAt = profile.created_at
@@ -125,8 +125,8 @@ export async function GET(request: Request) {
         if (normalizedAddress) {
           profileLookup.set(normalizedAddress, { username: profile.username, image: imageUrl, created_at: createdAt })
         }
-        if (normalizedProxy) {
-          profileLookup.set(normalizedProxy, { username: profile.username, image: imageUrl, created_at: createdAt })
+        if (normalizedDepositWallet) {
+          profileLookup.set(normalizedDepositWallet, { username: profile.username, image: imageUrl, created_at: createdAt })
         }
       }
     }

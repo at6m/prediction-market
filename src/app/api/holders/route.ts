@@ -56,10 +56,10 @@ export async function GET(request: Request) {
     const addressSet = new Set<string>()
     function collectAddresses(holders: Holder[]) {
       holders.forEach(({ user }) => {
-        const proxy = normalizeAddressKey(user.deposit_wallet_address)
+        const depositWallet = normalizeAddressKey(user.deposit_wallet_address)
 
-        if (proxy) {
-          addressSet.add(proxy)
+        if (depositWallet) {
+          addressSet.add(depositWallet)
         }
       })
     }
@@ -79,7 +79,7 @@ export async function GET(request: Request) {
       for (const profile of profiles || []) {
         const fallbackAddress = profile.deposit_wallet_address ?? profile.address
         const normalizedAddress = normalizeAddressKey(profile.address)
-        const normalizedProxyAddress = normalizeAddressKey(profile.deposit_wallet_address)
+        const normalizedDepositWalletAddress = normalizeAddressKey(profile.deposit_wallet_address)
         const imageUrl = normalizeAvatarUrl(profile.image)
         const createdAt = profile.created_at
           ? new Date(profile.created_at).toISOString()
@@ -95,8 +95,8 @@ export async function GET(request: Request) {
         if (normalizedAddress) {
           profileLookup.set(normalizedAddress, profileData)
         }
-        if (normalizedProxyAddress) {
-          profileLookup.set(normalizedProxyAddress, profileData)
+        if (normalizedDepositWalletAddress) {
+          profileLookup.set(normalizedDepositWalletAddress, profileData)
         }
       }
     }

@@ -232,10 +232,10 @@ export const UserRepository = {
         }
       }
 
-      const proxyAddress = await ensureUserDepositWallet(user)
+      const depositWalletAddress = await ensureUserDepositWallet(user)
 
-      if (proxyAddress && !user.username) {
-        const generatedUsername = generateUsername(proxyAddress)
+      if (depositWalletAddress && !user.username) {
+        const generatedUsername = generateUsername(depositWalletAddress)
 
         if (generatedUsername) {
           try {
@@ -403,8 +403,8 @@ export const UserRepository = {
 
     return await runQuery(async () => {
       const addressClauses = normalizedAddresses.map(addr => eq(sql`LOWER(${users.address})`, addr))
-      const proxyClauses = normalizedAddresses.map(addr => eq(sql`LOWER(${users.deposit_wallet_address})`, addr))
-      const whereConditions = [...addressClauses, ...proxyClauses].filter(Boolean)
+      const depositWalletClauses = normalizedAddresses.map(addr => eq(sql`LOWER(${users.deposit_wallet_address})`, addr))
+      const whereConditions = [...addressClauses, ...depositWalletClauses].filter(Boolean)
       const whereClause = whereConditions.length > 1
         ? or(...whereConditions)
         : whereConditions[0]
@@ -430,26 +430,26 @@ export const UserRepository = {
   },
 }
 
-function generateUsername(proxyAddress: string) {
+function generateUsername(depositWalletAddress: string) {
   const timestamp = Date.now()
 
-  return `${proxyAddress}-${timestamp}`
+  return `${depositWalletAddress}-${timestamp}`
 }
 
 async function ensureUserDepositWallet(user: any): Promise<string | null> {
-  const hasProxyAddress = typeof user?.deposit_wallet_address === 'string' && user.deposit_wallet_address.startsWith('0x')
-  if (!hasProxyAddress) {
+  const hasDepositWalletAddress = typeof user?.deposit_wallet_address === 'string' && user.deposit_wallet_address.startsWith('0x')
+  if (!hasDepositWalletAddress) {
     return null
   }
 
   try {
-    const proxyAddress = user.deposit_wallet_address as `0x${string}`
+    const depositWalletAddress = user.deposit_wallet_address as `0x${string}`
     let nextStatus: DepositWalletStatus = (user.deposit_wallet_status as DepositWalletStatus | null) ?? 'not_started'
     const updates: Record<string, any> = {}
 
     const shouldCheckDeployment = user.deposit_wallet_status !== 'deployed'
     if (shouldCheckDeployment) {
-      const deployed = await isDepositWalletDeployed(proxyAddress)
+      const deployed = await isDepositWalletDeployed(depositWalletAddress)
       if (deployed) {
         nextStatus = 'deployed'
       }
@@ -469,13 +469,13 @@ async function ensureUserDepositWallet(user: any): Promise<string | null> {
         .where(eq(users.id, user.id))
     }
 
-    user.deposit_wallet_address = proxyAddress
+    user.deposit_wallet_address = depositWalletAddress
     user.deposit_wallet_status = nextStatus
     if (nextStatus === 'deployed') {
       user.deposit_wallet_tx_hash = null
     }
 
-    return proxyAddress
+    return depositWalletAddress
   }
   catch (error) {
     console.error('Failed to ensure Deposit Wallet metadata', error)

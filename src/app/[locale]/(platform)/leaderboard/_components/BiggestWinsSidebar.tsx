@@ -40,7 +40,7 @@ export default function BiggestWinsSidebar({
           {isBiggestWinsLoading && <BiggestWinsSkeleton count={6} />}
 
           {!isBiggestWinsLoading && biggestWins.map((entry, index) => (
-            <BiggestWinRow key={`${(entry as Record<string, unknown>).proxyWallet || (entry as Record<string, unknown>).userName || ''}-${entry.winRank ?? entry.rank ?? index}`} entry={entry} index={index} />
+            <BiggestWinRow key={`${entry.depositWallet || entry.userName || ''}-${entry.winRank ?? entry.rank ?? index}`} entry={entry} index={index} />
           ))}
         </div>
       </div>
@@ -52,11 +52,13 @@ function BiggestWinRow({ entry, index }: { entry: BiggestWinEntry, index: number
   const record = entry as Record<string, unknown>
   const rank = entry.winRank ?? entry.rank ?? index + 1
   const address = resolveString(record, [
-    'user.proxyWallet',
-    'user.proxy_wallet',
+    'user.depositWallet',
+    'user.deposit_wallet',
+    'user.deposit_wallet_address',
     'user.address',
-    'proxyWallet',
-    'proxy_wallet',
+    'depositWallet',
+    'deposit_wallet',
+    'deposit_wallet_address',
     'address',
     'walletAddress',
     'wallet',

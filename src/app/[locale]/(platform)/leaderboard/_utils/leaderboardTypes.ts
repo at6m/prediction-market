@@ -1,6 +1,6 @@
 export interface LeaderboardEntry {
   rank?: number | string
-  proxyWallet?: string
+  depositWallet?: string
   userName?: string
   vol?: number
   pnl?: number
@@ -12,7 +12,7 @@ export interface LeaderboardEntry {
 export interface BiggestWinEntry {
   rank?: number | string
   winRank?: number | string
-  proxyWallet?: string
+  depositWallet?: string
   userName?: string
   profileImage?: string
   xUsername?: string
